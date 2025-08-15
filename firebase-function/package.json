@@ -1,0 +1,34 @@
+{
+  "name": "form-submission-function",
+  "version": "1.0.0",
+  "description": "Firebase Cloud Function to handle form submissions and create Jekyll posts",
+  "main": "index.js",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "cors": "^2.8.5",
+    "firebase-admin": "^11.11.0",
+    "firebase-functions": "^4.5.0",
+    "js-yaml": "^4.1.0",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^9.0.1"
+  },
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "keywords": [
+    "firebase",
+    "cloud-functions",
+    "form-submission",
+    "jekyll",
+    "github-pages"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

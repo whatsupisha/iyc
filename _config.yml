@@ -1,0 +1,47 @@
+title: 'Whats up Isha'
+description: 'Community of Ishaites to share information, giveaway items and ask questions'
+baseurl: '/iyc'
+url: ''
+github_user: 'whatsupisha'
+github_repo: 'iyc'
+github_branch: 'master'
+firebase_url: 'https://asia-south1-isocnet-2d37f.cloudfunctions.net'
+site_secret: 'forum_secret_key_2025_secure_hash_verification'
+
+markdown: kramdown
+highlighter: rouge
+permalink: /:categories/:title/
+
+collections:
+  topics:
+    output: true
+    permalink: /topic/:name/
+
+defaults:
+  - scope:
+      path: ''
+      type: 'posts'
+    values:
+      permalink: /posts/:title-:year-:month-:day
+      layout: 'post'
+  - scope:
+      path: ''
+      type: 'topics'
+    values:
+      layout: 'topic'
+
+# Note: Removed image file exclusions to allow assets/images/ to be processed
+
+# Only process markdown files as posts
+include:
+  - '_posts/**/*.md'
+
+# Exclude non-markdown files from being processed as posts
+exclude:
+  - '_posts/**/*.png'
+  - '_posts/**/*.jpg'
+  - '_posts/**/*.jpeg'
+  - '_posts/**/*.gif'
+  - '_posts/**/*.svg'
+  - '_posts/**/*.ico'
+  - '_posts/**/*.webp'

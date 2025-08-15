@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page.title | default: site.title }}</title>
+    <link rel="icon" href="{{ site.baseurl }}/assets/images/favicon_transparent.png" type="image/png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+      .text-orange-600 {
+        color: #e57324 !important;
+      }
+      @font-face {
+        font-family: "cera-round-pro-bold"; /* Choose a name for your font */
+        src: url("{{ site.baseurl }}/assets/font/cera-round-pro-free-font/Demo_fonts/Web_Font/FONTSPRINGDEMO-CeraRoundProBlackRegular.woff")
+          format("woff"); /* Path to WOFF2 file */
+        font-weight: normal; /* Optional: define font weight */
+        font-style: normal; /* Optional: define font style */
+      }
+      @font-face {
+        font-family: "nunito-bold"; /* Nunito Bold */
+        src: url("{{ site.baseurl }}/assets/fonts/nunito/Nunito-Variable.ttf") format("truetype");
+        font-weight: 700;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "nunito"; /* Nunito Regular */
+        src: url("{{ site.baseurl }}/assets/fonts/nunito/Nunito-Variable.ttf") format("truetype");
+        font-weight: 400;
+        font-style: normal;
+      }
+      .prose > p {
+        margin-bottom: 1em; /* for better spacing in the blog content */
+      }
+    </style>
+  </head>
+  <body class="bg-white min-h-screen text-gray-900" style="font-family: nunito">
+    <!-- Header -->
+    <header class="border-b border-gray-200 bg-white">
+      <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+          <!-- Left side: Logo + Title + Description -->
+          <div class="flex items-center space-x-4">
+            <img
+              src="{{ site.baseurl }}/assets/images/shiva.jpg"
+              alt="Shiva"
+              class="w-20 h-20 rounded-full object-cover"
+            />
+            <div>
+              <h1 class="text-2xl font-bold text-orange-600" style="font-family: cera-round-pro-bold">
+                {{ site.title }}
+              </h1>
+              <p class="text-gray-500">{{ site.description }}</p>
+            </div>
+          </div>
+          <!-- Right side: Navigation -->
+          {% unless page.layout == 'submit_form' %}
+          <nav class="flex items-center">
+            <a
+              href="{{ site.baseurl }}/post/"
+              class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-all"
+            >
+              Post
+            </a>
+          </nav>
+          {% endunless %}
+        </div>
+      </div>
+    </header>
+
+    <div
+      id="notification"
+      class="hidden p-2 bg-orange-50 border-2 border-orange-400 rounded-xl text-center"
+      style="
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        max-width: 800px;
+        min-width: 400px;
+        width: 80%;
+      "
+    >
+      <p class="text-orange-600 text-sm font-semibold" id="notificationTitle">
+        Backend is yet to start processing ${operation} operation
+      </p>
+      <p class="text-orange-400 text-xs" id="notificationDescription">
+        Refresh the page after ${new Date(timestamp + 30000).toLocaleTimeString()} for an update
+      </p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">{{ content }}</main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 mt-16 bg-white">
+      <div class="container mx-auto px-6 py-8 text-center text-gray-600">
+        <p>&copy; 2025 {{ site.title }}. Built using <a href="https://nonbios.ai">nonbios.ai</a></p>
+      </div>
+    </footer>
+    <!-- Workflow Tracker Script -->
+    <script src="{{ site.baseurl }}/assets/js/workflow-tracker.js"></script>
+    <script>
+      window.firebaseUrl = "{{ site.firebase_url }}"
+      window.baseurl = "{{ site.baseurl }}"
+      window.siteSecret = "{{ site.site_secret }}"
+    </script>
+  </body>
+</html>

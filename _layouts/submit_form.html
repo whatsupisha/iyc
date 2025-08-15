@@ -1,0 +1,414 @@
+---
+layout: default
+---
+
+<div class="max-w-4xl mx-auto">
+  <!-- Page Header -->
+  <div class="text-center mb-8">
+    <h1 id="pageTitle" class="text-4xl font-bold text-orange-600 mb-4">✨ Share Your Ideas ✨</h1>
+    <p id="pageSubtitle" class="text-xl text-gray-600">Create a new post and share your thoughts with the community</p>
+  </div>
+
+  <!-- Form Container -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+    <form id="submissionForm" enctype="multipart/form-data" class="space-y-6">
+      <!-- Hidden fields for edit mode -->
+      <input type="hidden" id="date" name="date" value="" />
+      <input type="hidden" id="slug" name="slug" value="" />
+      <input type="hidden" id="deletedFiles" name="deletedFiles" value="" />
+
+      <!-- Title Field -->
+      <!-- Hidden field for edit mode -->
+      <div class="group">
+        <label for="title" class="block text-gray-400 text-lg font-medium mb-2"> 🎯 Post Title </label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          required
+          class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition-all duration-300 text-lg"
+        />
+      </div>
+
+      <!-- Description Field -->
+      <div class="group">
+        <label for="description" class="block text-gray-400 text-lg font-medium mb-2"> 📝 Description </label>
+        <textarea
+          id="description"
+          name="description"
+          required
+          rows="6"
+          class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition-all duration-300 text-lg resize-none"
+        ></textarea>
+
+        <!-- Existing Images Container (for edit mode) -->
+        <div id="existingImagesContainer" class="mt-4 hidden">
+          <h4 class="text-gray-600 font-medium mb-2">📷 Existing Images:</h4>
+          <div id="existingImagesList" class="flex flex-wrap gap-3"></div>
+        </div>
+      </div>
+
+      <!-- Multiple File Upload Field -->
+      <div class="group">
+        <label for="files" class="block text-gray-400 text-lg font-medium mb-2"> 📎 Attach Files (Optional) </label>
+        <div
+          class="file-upload-area bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-100 hover:border-orange-400 transition-all duration-300"
+        >
+          <input type="file" id="files" name="files" class="hidden" accept="*/*" multiple />
+          <div id="fileUploadContent">
+            <div class="text-5xl mb-4 text-gray-400">📁</div>
+            <p class="text-gray-700 text-lg font-semibold mb-2">Drop your files here or click to browse</p>
+            <p class="text-gray-500">Multiple files accepted - any file type</p>
+          </div>
+        </div>
+
+        <!-- Selected Files Preview -->
+        <div id="selectedFilesContainer" class="mt-4 hidden">
+          <h4 class="text-gray-600 font-medium mb-2">📋 Attached Files:</h4>
+          <div id="uploadedFilesList" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="pt-4 flex gap-4">
+        <button
+          type="submit"
+          id="submitBtn"
+          class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-8 rounded-xl text-lg shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-orange-300"
+        >
+          <span id="submitText">🚀 <span id="submitAction">Create Post</span></span>
+          <span id="loadingText" class="hidden">⏳ Creating...do not navigate to another page</span>
+        </button>
+        <a
+          href="{{ site.baseurl }}/"
+          class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 px-8 rounded-xl text-lg text-center transition-all duration-300"
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="hidden mt-6 p-6 bg-green-100 border-2 border-green-400 rounded-xl text-center">
+      <div class="text-4xl mb-2">🎉</div>
+      <p class="text-green-800 text-xl font-semibold">Post is submitted & backend is processing it...</p>
+      <p class="text-green-700">
+        It will take some time for backend to process the post & make it available on the website. Feel free to check
+        other posts in the meantime. <br />
+        The form will be made available when the previous submission completes.
+      </p>
+    </div>
+
+    <!-- Update in progress Message 
+    <div id="successMessage" class="hidden mt-6 p-6 bg-orange-50 border-2 border-orange-400 rounded-xl text-center">
+      <div class="text-4xl mb-2">🎉</div>
+      <p class="text-orange-600 text-xl font-semibold" id="successMessageTitle">
+        Post is submitted & backend is processing it...
+      </p>
+      <p class="text-orange-400" id="successMessageDescription">
+        It will take some time for backend to process the post & make it available on the website. Feel free to check
+        other posts in the meantime. <br />
+        The form will be made available when the previous submission completes.
+      </p>
+    </div> -->
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden mt-6 p-6 bg-red-100 border-2 border-red-400 rounded-xl text-center">
+      <div class="text-4xl mb-2">❌</div>
+      <p class="text-red-800 text-xl font-semibold">Submission Failed</p>
+      <p id="errorText" class="text-red-700">Please try again later.</p>
+    </div>
+  </div>
+</div>
+
+<script src="{{ '/assets/js/cookie-manager.js' | relative_url }}"></script>
+
+<script>
+  // Firebase Function URL - Replace with your actual Firebase function URL
+  const FIREBASE_FUNCTION_URL = "{{ site.firebase_url }}/submitForm"
+
+  // File upload handling
+  const filesInput = document.getElementById("files")
+  const fileUploadArea = document.querySelector(".file-upload-area")
+  const fileUploadContent = document.getElementById("fileUploadContent")
+  const selectedFilesContainer = document.getElementById("selectedFilesContainer")
+  const uploadedFilesList = document.getElementById("uploadedFilesList")
+  const existingImagesContainer = document.getElementById("existingImagesContainer")
+  const existingImagesList = document.getElementById("existingImagesList")
+
+  let attachedFiles = []
+  let existingImages = []
+  let deletedFiles = []
+  let fullPostSlug = ""
+
+  // Click to upload
+  fileUploadArea.addEventListener("click", () => {
+    filesInput.click()
+  })
+
+  // Edit functionality - detect edit mode and populate form
+  function initializeEditMode() {
+    const urlParams = new URLSearchParams(window.location.search)
+    const editMode = urlParams.get("edit")
+    const postDate = urlParams.get("date")
+    const slug = urlParams.get("slug")
+
+    if (editMode === "true" && postDate && slug) {
+      // Update page title and subtitle for edit mode
+      document.title = "Edit Post"
+      document.getElementById("pageTitle").textContent = "✏️ Edit Your Post"
+      document.getElementById("pageSubtitle").textContent = "Update your post and share your revised thoughts"
+      document.getElementById("submitAction").textContent = "Update Post"
+      document.getElementById("loadingText").textContent = "⏳ Updating...do no navigate to another page"
+
+      // Store the slug for form submission (just the slug part, not the full date-slug)
+      document.getElementById("slug").value = slug
+      document.getElementById("date").value = postDate
+      // Construct the full slug in format YYYY-MM-DD-slug for loading
+      fullPostSlug = `${postDate}-${slug}`
+
+      // Load existing post data
+      loadPostForEdit(fullPostSlug)
+    }
+  }
+
+  async function loadPostForEdit(fullPostSlug) {
+    try {
+      // Fetch the post markdown file directly from GitHub raw content
+      const githubUrl = `https://raw.githubusercontent.com/{{ site.github_user }}{{ site.baseurl }}/{{ site.github_branch }}/_posts/${fullPostSlug}/index.md`
+      const response = await fetch(githubUrl)
+      if (response.ok) {
+        const postContent = await response.text()
+        parseAndPopulateForm(postContent, fullPostSlug)
+      } else {
+        throw new Error(`Could not load post for editing (Status: ${response.status})`)
+      }
+    } catch (error) {
+      console.error("Error loading post for edit:", error)
+      document.getElementById("errorText").textContent = "Could not load post for editing: " + error.message
+      document.getElementById("errorMessage").classList.remove("hidden")
+    }
+  }
+  function parseAndPopulateForm(postContent, fullPostSlug) {
+    // Parse the markdown front matter and content
+    const frontMatterMatch = postContent.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
+    if (frontMatterMatch) {
+      const frontMatter = frontMatterMatch[1]
+      let content = frontMatterMatch[2]
+
+      // Extract title from front matter - handle both quoted and unquoted titles
+      const titleMatch = frontMatter.match(/title:\s*["']?([^"'\n]+?)["']?\s*$/m)
+      if (titleMatch) {
+        document.getElementById("title").value = titleMatch[1].trim()
+      }
+
+      // Extract and handle existing images
+      const imageMatches = content.match(/!\[([^\]]*)\]\(([^)]+)\)/g)
+      if (imageMatches && imageMatches.length > 0) {
+        existingImages = imageMatches.map((match) => {
+          const imageMatch = match.match(/!\[([^\]]*)\]\(([^)]+)\)/)
+          return {
+            alt: imageMatch[1],
+            url: imageMatch[2],
+            filename: imageMatch[2].split("/").pop().replace(/\?.*$/, ""),
+          }
+        })
+
+        displayExistingImages()
+
+        // Remove image references from content for clean editing
+        content = content.replace(/!\[([^\]]*)\]\(([^)]+)\)\s*/g, "").trim()
+      }
+
+      // Set description as the content (without image references)
+      document.getElementById("description").value = content.trim()
+    }
+  }
+
+  function displayExistingImages() {
+    if (existingImages.length > 0) {
+      existingImagesContainer.classList.remove("hidden")
+      existingImagesList.innerHTML = ""
+
+      existingImages.forEach((image, index) => {
+        const imageElement = document.createElement("div")
+        imageElement.className = "relative inline-block bg-gray-100 rounded-lg p-2 border"
+        imageElement.innerHTML = `
+          <img src="${image.url}" alt="${image.alt}" class="w-20 h-20 object-cover rounded">
+          <button type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition-colors" onclick="removeExistingImage(${index})">
+            ×
+          </button>
+          <p class="text-xs text-gray-600 mt-1 truncate w-20">${image.filename}</p>
+        `
+        existingImagesList.appendChild(imageElement)
+      })
+    }
+  }
+
+  function removeExistingImage(index) {
+    const removedImage = existingImages[index]
+    deletedFiles.push(removedImage.filename)
+    existingImages.splice(index, 1)
+
+    // Update the hidden field
+    document.getElementById("deletedFiles").value = deletedFiles.join(",")
+
+    // Refresh display
+    if (existingImages.length === 0) {
+      existingImagesContainer.classList.add("hidden")
+    } else {
+      displayExistingImages()
+    }
+  }
+
+  // Initialize edit mode on page load
+  document.addEventListener("DOMContentLoaded", initializeEditMode)
+
+  // File selection
+  filesInput.addEventListener("change", (e) => {
+    const files = Array.from(e.target.files)
+    attachedFiles = [...attachedFiles, ...files]
+
+    displayUploadedFiles()
+  })
+
+  function displayUploadedFiles() {
+    console.log("uploaded files -", attachedFiles)
+
+    if (attachedFiles.length > 0) {
+      selectedFilesContainer.classList.remove("hidden")
+      uploadedFilesList.innerHTML = ""
+
+      attachedFiles.forEach((file, index) => {
+        const fileElement = document.createElement("div")
+        fileElement.className = "flex items-center justify-between bg-gray-50 p-3 rounded-lg border"
+        fileElement.innerHTML = `
+          <div class="flex items-center">
+            <span class="text-2xl mr-3">📄</span>
+            <div>
+              <p class="font-medium text-gray-800">${file.name}</p>
+              <p class="text-sm text-gray-500">${(file.size / 1024).toFixed(1)} KB</p>
+            </div>
+          </div>
+          <button type="button" class="text-red-500 hover:text-red-700 font-bold text-xl" onclick="removeSelectedFile(${index})">
+            ×
+          </button>
+        `
+        uploadedFilesList.appendChild(fileElement)
+      })
+    } else {
+      selectedFilesContainer.classList.add("hidden")
+    }
+  }
+
+  function removeSelectedFile(index) {
+    attachedFiles.splice(index, 1)
+    displayUploadedFiles()
+  }
+
+  // Drag and drop functionality
+  fileUploadArea.addEventListener("dragover", (e) => {
+    e.preventDefault()
+    fileUploadArea.classList.add("border-orange-500", "bg-orange-50")
+  })
+
+  fileUploadArea.addEventListener("dragleave", (e) => {
+    e.preventDefault()
+    fileUploadArea.classList.remove("border-orange-500", "bg-orange-50")
+  })
+
+  fileUploadArea.addEventListener("drop", (e) => {
+    e.preventDefault()
+    fileUploadArea.classList.remove("border-orange-500", "bg-orange-50")
+
+    const files = Array.from(e.dataTransfer.files)
+    attachedFiles = [...attachedFiles, ...files]
+    displayUploadedFiles()
+  })
+
+  // Form submission
+  document.getElementById("submissionForm").addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    const submitBtn = document.getElementById("submitBtn")
+    const submitText = document.getElementById("submitText")
+    const loadingText = document.getElementById("loadingText")
+    const successMessage = document.getElementById("successMessage")
+    const errorMessage = document.getElementById("errorMessage")
+
+    // Show loading state
+    submitBtn.disabled = true
+    submitText.classList.add("hidden")
+    loadingText.classList.remove("hidden")
+    successMessage.classList.add("hidden")
+    errorMessage.classList.add("hidden")
+
+    try {
+      const userCookie = getOrSetUserCookie()
+
+      // Prepare form data
+      const formData = new FormData()
+      formData.append("title", document.getElementById("title").value)
+      formData.append("description", document.getElementById("description").value)
+
+      // Add multiple files
+      attachedFiles.forEach((file, index) => {
+        formData.append(`files`, file)
+      })
+
+      // Add slug for edit operations
+      const slug = document.getElementById("slug").value
+      if (slug) {
+        formData.append("slug", slug)
+        formData.append("date", document.getElementById("date").value)
+      }
+
+      // Add deleted files list
+      const deletedFilesValue = document.getElementById("deletedFiles").value
+      if (deletedFilesValue) {
+        formData.append("deletedFiles", deletedFilesValue)
+      }
+      // Add slug for edit operations
+
+      // Submit to Firebase function
+      const response = await fetch(FIREBASE_FUNCTION_URL, {
+        method: "POST",
+        headers: {
+          "x-user-cookie": userCookie,
+        },
+        body: formData,
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log("Success:", result)
+
+        // Show success message
+        successMessage.classList.remove("hidden")
+
+        if (window.workflowTracker && result.commitSha) {
+          const slug = document.getElementById("slug").value
+          const url = window.location.href
+          const submissionId = slug || null
+          const operation = slug ? "edit_post" : "new_post"
+
+          // Track submission with commitSha directly
+          window.workflowTracker.trackSubmission(url, submissionId, operation, result.commitSha, Date.now())
+        }
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+    } catch (error) {
+      console.error("Error:", error)
+
+      // Show error message
+      document.getElementById("errorText").textContent = error.message
+      errorMessage.classList.remove("hidden")
+    } finally {
+      // Reset button state
+      submitBtn.disabled = false
+      submitText.classList.remove("hidden")
+      loadingText.classList.add("hidden")
+    }
+  })
+</script>

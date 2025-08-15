@@ -1,0 +1,389 @@
+---
+layout: default
+---
+
+<div class="container mx-auto px-4 py-6">
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <!-- Post Header -->
+    <div class="border-b border-gray-200 pb-4 mb-6">
+      <!-- Post Owner Management - moved above title -->
+      <div
+        id="postOwnerActions"
+        class="flex justify-end space-x-2 mb-3 ml-auto"
+        style="display: none; margin-left: auto; width: fit-content"
+      >
+        <button
+          id="editPostBtn"
+          class="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-all text-sm"
+        >
+          <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+            ></path>
+          </svg>
+          Edit
+        </button>
+        <button
+          id="deletePostBtn"
+          class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition-all text-sm"
+        >
+          <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path>
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1.707-6.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          Delete
+        </button>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ page.title }}</h1>
+      <div class="flex items-center text-sm text-gray-500">
+        <!--
+        <span class="flex items-center mr-4">
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+          </svg>
+          by {{ page.author | default: "Anonymous" }}
+        </span>
+-->
+        <span class="flex items-center mr-4">
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          {{ page.date | date: "%B %d, %Y at %I:%M %p" }}
+        </span>
+        <!--
+        <span class="flex items-center">
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
+          </svg>
+          {{ content | number_of_words }} words
+        </span>
+-->
+      </div>
+    </div>
+
+    <!-- Post Content -->
+    <div class="prose prose-lg max-w-none">{{ content }}</div>
+
+    <!-- Comments Section -->
+    <div class="mt-8 p-6 border-t border-gray-200" id="commentsContainer">
+      <h3 class="text-xl font-bold text-gray-900 mb-4">Comments</h3>
+	  {% assign post_date_slug = page.date | date: "%Y-%m-%d" | append: "-" | append: page.slug %}
+	  {% assign comments = site.data.comments[post_date_slug] %}
+      {% if comments.size > 0 %} 
+	  	{% for comment_hash in comments %} 
+	  		{% assign comment = comment_hash[1] %} 
+			{% assign comment_id = comment_hash[0] %}
+			<div class="bg-gray-50 rounded-lg p-4 border border-gray-200" data-comment-id="{{ comment_id }}" data-post-date="{{ page.date | date: "%Y-%m-%d" }}">
+				<div class="flex items-center justify-between mb-2">
+				<span class="text-xs text-gray-400">{{ comment.date | date: "%B %d, %Y at %I:%M %p" }}</span>
+				<div class="flex items-center space-x-2">
+					<!-- Comment Owner Actions -->
+<div class="comment-owner-actions" style="display: none" data-cookie-hash="{{ comment.cookie_hash }}">
+					<button
+						class="edit-comment-btn bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition-all"
+						data-comment-id="{{ comment_id }}" data-post-date="{{ page.date | date: "%Y-%m-%d" }}"
+						data-comment-text="{{ comment.message | escape }}"
+						data-comment-image="{{ comment.image }}">
+						<svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+						<path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+						></path>
+						</svg>
+						Edit
+					</button>
+					<button
+						class="delete-comment-btn bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-all"
+						data-comment-id="{{ comment_id }}" data-post-date="{{ page.date | date: "%Y-%m-%d" }}">
+						<svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+						<path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path>
+						<path
+							fill-rule="evenodd"
+							d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1.707-6.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+							clip-rule="evenodd"></path>
+						</svg>
+						Delete
+					</button>
+					</div>
+				</div>
+				</div>
+				<div class="text-gray-700">
+				{{ comment.message }} {% if comment.image %}
+				<div class="mt-3">
+					<img
+					src="{{ comment.image }}"
+					alt="Comment attachment"
+					class="max-w-full h-auto rounded-lg border border-gray-300 shadow-sm cursor-pointer"
+					onclick="openImageModal(this.src)"
+					style="max-height: 300px"
+					/>
+				</div>
+				{% endif %}
+				</div>
+			</div>
+      		{% endfor %} 
+	  {% else %}
+      	<p class="text-gray-500 italic">No comments yet. Be the first to comment.</p>
+      {% endif %}
+    </div>
+
+    <!-- Comment Form -->
+    <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+      <form id="commentForm" class="space-y-4" enctype="multipart/form-data">
+        <input type="hidden" name="postSlug" value="{{ page.slug }}" />
+        <input type="hidden" name="postDate" value="{{ page.date | date: "%Y-%m-%d" }}" />
+        <div>
+          <textarea
+            id="comment"
+            name="comment"
+            rows="4"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            placeholder="Write your comment here..."
+          ></textarea>
+        </div>
+
+        <div>
+          <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Attach Image (Optional)</label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          />
+        </div>
+
+        <div class="flex items-center justify-between">
+          <button
+            type="submit"
+            class="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition-all font-medium"
+          >
+            Submit Comment
+          </button>
+          <div id="commentStatus" class="text-sm"></div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Back to Forum Button -->
+  <div class="mt-8 pt-6 border-t border-gray-200">
+    <a
+      href="{{ '/' | relative_url }}"
+      class="inline-flex items-center bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-all"
+    >
+      <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      Back to Forum
+    </a>
+  </div>
+</div>
+
+<!-- Image Modal -->
+<div
+  id="imageModal"
+  class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden"
+  onclick="closeImageModal()"
+>
+  <div class="max-w-4xl max-h-full p-4">
+    <img id="modalImage" src="" alt="Full size image" class="max-w-full max-h-full object-contain" />
+    <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300">
+      &times;
+    </button>
+  </div>
+</div>
+
+<!-- cookies managed is loaded here as the cookie related calls are done after this in js-->
+<script src="{{ '/assets/js/cookie-manager.js' | relative_url }}"></script>
+
+<script>
+  function openImageModal(imageSrc) {
+    document.getElementById("imageModal").classList.remove("hidden")
+    document.getElementById("modalImage").src = imageSrc
+    document.body.style.overflow = "hidden"
+  }
+
+  function closeImageModal() {
+    document.getElementById("imageModal").classList.add("hidden")
+    document.body.style.overflow = "auto"
+  }
+
+  // Check if current user is post owner
+  async function revealEditDeleteButtonIfRequired() {
+    const postOwnerCookieHash = '{{ page.cookie_hash | default: "" }}'
+    
+    if (postOwnerCookieHash) {
+      const userCookie = getCookie()
+      if (userCookie) {
+        const userHash = await generateOwnershipHash(userCookie)
+        
+        if (userHash === postOwnerCookieHash) {
+          document.getElementById("postOwnerActions").style.display = "block"
+        }
+      }
+    }
+  }
+
+  // Close modal with Escape key
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeImageModal()
+    }
+  })
+
+  // Post Owner Management
+  document.addEventListener("DOMContentLoaded", function () {
+    // Edit post functionality
+    document.getElementById("editPostBtn").addEventListener("click", function () {
+      const postSlug = "{{ page.slug }}"
+      const postDate = '{{ page.date | date: "%Y-%m-%d" }}'
+      const editUrl = `{{ site.baseurl }}/post/?edit=true&date=${postDate}&slug=${postSlug}`
+      window.location.href = editUrl
+    })
+
+    // Delete post functionality
+    document.getElementById("deletePostBtn").addEventListener("click", function () {
+      if (confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
+        const postSlug = "{{ page.slug }}"
+        const postDate = '{{ page.date | date: "%Y-%m-%d" }}'
+        const fullPostSlug = `${postDate}-${postSlug}`
+
+        // Show loading state
+        const deleteBtn = document.getElementById("deletePostBtn")
+        const originalText = deleteBtn.innerHTML
+        deleteBtn.innerHTML =
+          '<svg class="w-4 h-4 inline mr-1 animate-spin" fill="currentColor" viewBox="0 0 20 20"><path d="M4 2a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V4a2 2 0 00-2-2H4z"></path></svg>Deleting...'
+        deleteBtn.disabled = true
+
+        // Call Firebase delete function
+        fetch("{{ site.firebase_url }}/deleteContent", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-user-cookie": getCookie(),
+          },
+          body: JSON.stringify({
+            postSlug: postSlug,
+            postDate: postDate,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              if (window.workflowTracker && data.commitSha) {
+                // Track submission with commitSha directly
+                window.workflowTracker.trackSubmission(
+                  window.location.href,
+                  postSlug,
+                  "delete_post",
+                  data.commitSha,
+                  Date.now()
+                )
+              }
+
+              alert("Post deleted successfully!")
+			  window.location.reload()
+            } else {
+              throw new Error(data.error || "Failed to delete post")
+            }
+          })
+          .catch((error) => {
+            console.error("Error deleting post:", error)
+            alert("Error deleting post: " + error.message)
+            // Restore button state
+            deleteBtn.innerHTML = originalText
+            deleteBtn.disabled = false
+          })
+      }
+    })
+    // Reveal edit/delete buttons for post owner
+    // Reveal edit/delete buttons for post owner
+    revealEditDeleteButtonIfRequired()
+    // Reveal edit/delete buttons for comment owners
+    revealCommentActionsIfRequired()
+  })
+
+
+  window.postSlug = "{{ page.slug }}"
+</script>
+
+<!-- Edit Comment Modal -->
+<div id="editCommentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">Edit Comment</h3>
+        <button id="closeEditCommentModal" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form id="editCommentForm" enctype="multipart/form-data">
+        <input type="hidden" id="editCommentId" name="commentId" />
+        <input type="hidden" name="postSlug" value="{{ page.slug }}" />
+        <input type="hidden" name="postDate" value="{{ page.date | date: "%Y-%m-%d" }}" />
+        <input type="hidden" name="editMode" value="true" />
+
+        <div class="mb-4">
+          <label for="editCommentText" class="block text-sm font-medium text-gray-700 mb-2">Comment</label>
+          <textarea
+            id="editCommentText"
+            name="comment"
+            rows="4"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+          ></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label for="editCommentImage" class="block text-sm font-medium text-gray-700 mb-2">
+            Update Image (optional)
+          </label>
+          <input
+            type="file"
+            id="editCommentImage"
+            name="image"
+            accept="image/*"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <div id="currentCommentImage" class="mt-2 hidden">
+            <p class="text-sm text-gray-600 mb-2">Current image:</p>
+            <img id="currentCommentImagePreview" src="" alt="Current comment image" class="max-w-xs rounded-lg" />
+          </div>
+        </div>
+
+        <div id="editCommentStatus" class="mb-4 hidden"></div>
+
+        <div class="flex justify-end space-x-3">
+          <button
+            type="button"
+            id="cancelEditComment"
+            class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-all"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">
+            Update Comment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{{ '/assets/js/comment-manager.js' | relative_url }}"></script>
