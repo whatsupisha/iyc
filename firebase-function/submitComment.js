@@ -85,7 +85,8 @@ exports.submitComment = functions.region("asia-south1").https.onRequest((req, re
       // Create comment content in YAML format for Staticman structure
       let commentContent = `date: ${timestamp}
 cookie_hash: ${cookieHash}
-message: ${comment}`
+message: |
+  ${comment.split('\n').join('\n  ')}`
 
       // In edit mode, preserve existing image if no new image is uploaded
       let existingImageUrl = null

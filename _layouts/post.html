@@ -115,7 +115,9 @@ layout: default
 				</div>
 				</div>
 				<div class="text-gray-700">
-				{{ comment.message }} {% if comment.image %}
+					{{ comment.message | markdownify }} 
+					<br/>
+					{% if comment.image %}
 				<div class="mt-3">
 					<img
 					src="{{ comment.image }}"
