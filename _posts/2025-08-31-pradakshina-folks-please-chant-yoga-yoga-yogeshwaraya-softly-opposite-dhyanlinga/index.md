@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Pradakshina folks, please chant yoga yoga yogeshwaraya softly opposite Dhyanlinga"
-date: 2025-08-31T04:57:10.133Z
+date: 2025-08-31
 author: Anonymous
 slug: pradakshina-folks-please-chant-yoga-yoga-yogeshwaraya-softly-opposite-dhyanlinga
 cookie_hash: ffc472b3c930328a
@@ -15,5 +15,5 @@ Please be mindful of other folks & a bit of empathy wont hurt. You can obviously
 
 Similarly, if you have habit of chanting loudly, please soften a bit when you crossing another Pradakshina guy or happen to unknowingly tagging along with someone going in your direction & both of you happen to be at same pace.
 
-As Sadhguru days, devotion is 'devoid of yourself'. So empathy to others should be a natural part of spiritual journey, specially at Isha.
+As Sadhguru says, devotion is 'devoid of yourself'. So empathy to others should be a natural part of spiritual journey, specially at Isha.
 
